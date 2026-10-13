@@ -37,7 +37,7 @@ import { useDevnet } from "@/components/DevnetContext";
 import { useToast } from "@/components/Toast";
 import { SkeletonDetailPage } from "@/components/Skeleton";
 import { useIndexerReady, IndexerWaitNotice } from "@/components/IndexerStatus";
-import { LockName, useCellNames } from "@/components/CellName";
+import { useCellNames } from "@/components/CellName";
 
 type PledgeSortMode = "recent" | "amount";
 
@@ -1261,7 +1261,7 @@ export default function CampaignDetailPage() {
               <div className="pt-4 border-t border-line">
                 <p className="text-sm text-ink-3 mb-1">Creator</p>
                 {names.get(campaign.creator.toLowerCase()) && (
-                  <p className="font-medium">{names.get(campaign.creator.toLowerCase())}</p>
+                  <p className="font-medium break-all">{names.get(campaign.creator.toLowerCase())}</p>
                 )}
                 <p className="font-mono text-sm break-all">{campaign.creator}</p>
               </div>
@@ -1454,9 +1454,12 @@ export default function CampaignDetailPage() {
                       className="flex items-center justify-between p-3 bg-surface-2 rounded-lg"
                     >
                       <div className="flex-1 min-w-0">
+                        {names.get(pledge.backer.toLowerCase()) && (
+                          <p className="text-sm font-medium break-all">{names.get(pledge.backer.toLowerCase())}</p>
+                        )}
                         <div className="flex items-center gap-2">
-                          <p className="font-mono text-sm truncate">
-                            <LockName lockHash={pledge.backer} names={names} />
+                          <p className="font-mono text-sm truncate" title={pledge.backer}>
+                            {formatHash(pledge.backer)}
                           </p>
                           <span className={`px-2 py-0.5 text-xs font-medium rounded ${getPledgeDistributionColor("locked")}`}>
                             {getPledgeDistributionLabel("locked")}

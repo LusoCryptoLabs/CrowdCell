@@ -15,6 +15,14 @@ const CELLULA: Partial<Record<NetworkType, { api: string; prefix: string }>> = {
 /** The API answers at most 50 addresses per request. */
 const BATCH = 50;
 
+/**
+ * A name as the registry allows it: a label of 1 to 40 characters of `a-z`, `0-9` and `-`, no hyphen at either end
+ * of a part, at most one dot (`shop.alice`), then `.cell`. Anything else is shown as the hash.
+ */
+const PART = "[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+const CELL_NAME = new RegExp(`^(?=.{1,40}\\.cell$)${PART}(?:\\.${PART})?\\.cell$`);
+export const isCellName = (name: string) => CELL_NAME.test(name);
+
 /** Lock hash to name, or null for none. Module-wide, so moving between pages asks for each lock once. */
 const cache = new Map<string, string | null>();
 
@@ -55,7 +63,7 @@ export async function lookupCellNames(locks: Lock[]): Promise<Map<string, string
       const { results } = (await res.json()) as { results: { address: string; name: string | null; expired?: boolean }[] };
       for (const r of results) {
         const hash = pending.get(r.address);
-        if (hash) cache.set(hash, r.name && !r.expired ? r.name : null);
+        if (hash) cache.set(hash, r.name && !r.expired && isCellName(r.name) ? r.name : null);
       }
     } catch {
       // Offline or blocked: these locks keep their hashes.

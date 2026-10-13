@@ -30,9 +30,22 @@ export function useCellNames(locks: Lock[]): Map<string, string | null> {
 }
 
 /**
- * A lock shown by its `.cell` name when it has one, by its short hash otherwise. The full hash stays in the tooltip.
- * Kept to one element so a reputation badge can sit next to the name later.
+ * A lock by its short hash, with its `.cell` name before it when it has one. Names are first come first served, so
+ * the hash stays in view and nobody passes for someone else by registering a name. The full hash stays in the
+ * tooltip. Kept to one element so a reputation badge can sit next to the name later.
  */
 export function LockName({ lockHash, names, chars }: { lockHash: string; names: Map<string, string | null>; chars?: number }) {
-  return <span title={lockHash}>{names.get(lockHash.toLowerCase()) ?? formatHash(lockHash, chars)}</span>;
+  const name = names.get(lockHash.toLowerCase());
+  const hash = formatHash(lockHash, chars);
+  return (
+    <span title={lockHash}>
+      {name ? (
+        <>
+          <span className="text-ink-2 break-all">{name}</span> {hash}
+        </>
+      ) : (
+        hash
+      )}
+    </span>
+  );
 }
